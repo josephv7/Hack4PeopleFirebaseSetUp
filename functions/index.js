@@ -16,7 +16,7 @@ exports.onAnswer = functions.firestore.document('AudioFiles/{fileId}')
 
 
 
-exports.onAnswer = functions.firestore.document('Done/{fileId}')
+exports.onAdded = functions.firestore.document('Done/{fileId}')
   .onCreate(event=>{
     const document = event.data.exists ? event.data.data() : null;
     const farmerId = document.farmerId;
