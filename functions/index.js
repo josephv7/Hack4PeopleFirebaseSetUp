@@ -14,8 +14,6 @@ exports.onAnswer = functions.firestore.document('AudioFiles/{fileId}')
   })
 
 
-
-
 exports.onAdded = functions.firestore.document('Done/{fileId}')
   .onCreate(event=>{
     const document = event.data.exists ? event.data.data() : null;
@@ -33,4 +31,27 @@ exports.onAdded = functions.firestore.document('Done/{fileId}')
     }).catch(function(error) {
         console.log("Error getting document:", error);
     });
+  })
+
+
+
+  exports.onNewConnection = functions.firestore.document('Connections/{fileId}')
+  .onCreate(event=>{
+    const document = event.data.exists ? event.data.data() : null;
+    const farmerId = document.farmerId;
+    const amount = parseFloat(document.initialPayment);
+    const newRef = firestore.doc(`farmers/${farmerId}`);
+    if(!newRef) return null;
+
+    return newRef.get().then((doc)=>{
+      if (doc.exists) {
+        const alreadyAmount = doc.data().amount;
+        const newAmount = parseFloat(alreadyAmount)+amount;
+        return newRef.set({amount: newAmount}, {merge: true});
+      }
+      return null;
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+
   })
